@@ -13,11 +13,15 @@ kubectl get pods
 kubectl get all
 ```
 
-Explain replicaset / naming of pod
-Increase replicas
+Highlight replicaset / naming of pod
 
 ``` YAML
 kubectl edit deployments nginx
+```
+
+Explain content / Increase replicas
+
+``` YAML
 kubectl get all
 ```
 
