@@ -1,12 +1,12 @@
 # Kubectl Intro
 
-## Demo 1 - deploy nginx 
+## Demo 1.1 - deploy nginx 
 
 ``` YAML
 kubectl create deployment nginx --image=nginx
 ``` 
 
-## Demo 2 - Pods / Edit / Replicas
+## Demo 1.2 - Pods / Edit / Replicas
 
 ``` YAML
 kubectl get pods
@@ -23,7 +23,7 @@ kubectl get all
 
 Explain output / replicas
 
-## Demo 3 - Debug
+## Demo 1.3 - Debug
 
 ``` YAML
 Kubectl logs <name>
