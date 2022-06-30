@@ -15,5 +15,3 @@ kubectl apply -f nginx-deployment.yaml
 
 show components
 highlight number of pods
-
-highlight contains template with sepc for pods
