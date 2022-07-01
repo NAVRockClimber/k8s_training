@@ -1,6 +1,6 @@
 # Configuration Files
 
-```YAML
+```Powershell
 kubectl apply -f nginx-deployment.yaml
 ```
 
@@ -9,7 +9,7 @@ show Age
 
 Increase replica count
 
-```YAML
+```Powershell
 kubectl apply -f nginx-deployment.yaml
 ```
 
