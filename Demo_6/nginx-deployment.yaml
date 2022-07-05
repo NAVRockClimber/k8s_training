@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+  namespace: nginx
+  labels:
+    app: nginx
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.23.0
+        resources:
+          limits:
+            memory: "25Mi"
+            cpu: "50m"
+        ports:
+        - containerPort: 80
+        env:
+          - name: configMap
+            valueFrom:
+              configMapKeyRef:
+                name: myconfigmap
+                key: unencrypted
+          - name: env-secret
+            valueFrom:
+              secretKeyRef:
+                key: secretenv
+                name: envsecret
+        volumeMounts:
+          - name: nginx-configmap
+            mountPath: /usr/share/nginx/html/index.html
+            subPath: index.html
+            readOnly: true
+          - name: my-secret
+            mountPath: /usr/share/nginx/html/MySecret.txt
+            subPath: MySecret.txt
+            readOnly: true
+      volumes:
+        - name: nginx-configmap
+          configMap:
+            name: nginx
+        - name: my-secret
+          secret:
+            secretName: mysecret
+        - name: myconfigmap
+          configMap:
+            name: myconfigmap
+        - name: env-secret
+          secret:
+             secretName: envsecret
