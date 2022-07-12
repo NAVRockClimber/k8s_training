@@ -1,37 +1,6 @@
-# Demo 4 - Complex Deployment
-
-Create NS file:
-
-```YAML
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: nginx
-```
-
-Add Namespace to Deployment & Service
-
-```YAML
-  namespace: nginx
-```
-
-show NGINX web site
-
-```Powershell
-kubectl -n nginx port-forward services/nginx 8080
-```
+# Demo 5 - Complex Deployment
 
 
-Make Service external reachable
-
-```YAML
-    type: LoadBalancer
-```
-
-open url in browser
-adjust website to greet "K8S"
-we unfortunately have no pv here
-we replace the PV by a configmap
 
 ```YAML
 apiVersion: v1
