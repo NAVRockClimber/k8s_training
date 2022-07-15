@@ -1,6 +1,11 @@
 # Demo 5 - Complex Deployment
 
+Now let us use a config map to store the url
+configmap can be used as volume or environment variable
 
+## create configmap
+
+configmap.yaml:
 
 ```YAML
 apiVersion: v1
@@ -9,54 +14,73 @@ metadata:
   name: nginx
   namespace: nginx
 data:
-  index.html: |
-    <!DOCTYPE html>
-    <html>
-    <head>
-    <title>Welcome to nginx!</title>
-    <style>
-    html { color-scheme: light dark; }
-    body { width: 35em; margin: 0 auto;
-    font-family: Tahoma, Verdana, Arial, sans-serif; }
-    </style>
-    </head>
-    <body>
-    <h1>Welcome to K8S</h1>
-    <p>If you see this page, the nginx web server is successfully installed and
-    working. Further configuration is required.</p>
-
-    <p>For online documentation and support please refer to
-    <a href="http://nginx.org/">nginx.org</a>.<br/>
-    Commercial support is available at
-    <a href="http://nginx.com/">nginx.com</a>.</p>
-
-    <p><em>Thank you for using nginx.</em></p>    
-    </body>
-    </html>
+  html-url: https://raw.githubusercontent.com/NAVRockClimber/k8s_training/main/Demo_4/index.html
 ```
 
-mount configmap into pod
+## update deployment
+
+add volume
 
 ```YAML
-    spec:
-      containers:
-      - name: nginx
-        image: nginx:1.23.0
-        resources:
-          limits:
-            memory: "25Mi"
-            cpu: "50m"
-        ports:
-        - containerPort: 80
-        volumeMounts:
-          - name: nginx-configmap
-            mountPath: /usr/share/nginx/html/index.html
-            subPath: index.html
-            readOnly: true
       volumes:
         - name: nginx-configmap
           configMap:
             name: nginx
 ```
 
-show updated Website
+add environment
+
+```YAML
+        env:
+          - name: htmlurl
+            valueFrom:
+              configMapKeyRef:
+                name: nginx-configmap
+                key: html-url
+```
+
+update command
+
+```YAML
+        command: ["sh", "-c", "curl $htmlurl -o /usr/share/nginx/html/index.html"]
+```
+
+## apply
+
+```Powershell
+kubectl apply -f .\configmap.yaml
+kubectl apply -f .\nginx-deployment.yaml
+kubectl -n nginx get pods
+```
+
+## secrets
+
+the same works for secrets due to they are the same just base64 obfusicated
+Secrets should not be commited into a git repository
+
+## create secrets
+
+
+Prepared secret html: https://github.com/NAVRockClimber/k8s_training/blob/main/Demo_5/index.html
+
+
+```Powershell
+kubectl -n nginx create secret generic secreturl --from-literal html-url=https://raw.githubusercontent.com/NAVRockClimber/k8s_training/main/Demo_5/index.html
+kubectl -n nginx create secret generic secreturl --from-literal html-url=https://raw.githubusercontent.com/NAVRockClimber/k8s_training/main/Demo_5/index.html --dry-run -o yaml
+```
+
+Update deployment to
+```YAML
+          - name: htmlurl
+            valueFrom:
+              secretKeyRef:
+                name: secreturl
+                key: html-url
+```
+
+```Powershell
+kubectl apply -f .\nginx-deployment.yaml
+Kubectl -n nginx port-forward services/nginx-service 8080
+```
+
+http://localhost:8080/
