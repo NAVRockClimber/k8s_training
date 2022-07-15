@@ -1,25 +1,110 @@
-## ConfigMaps & Secrets 
+## Extended ConfigMaps & Secrets 
 
-ConfigMaps & Secrets can be passed into a container as file or environment variable
+ConfigMaps & Secrets can not only be passed as environment variables also as read-only files
 
-Secrets are just a base64 encrypted configMap
-Secrets should not be commited into a git repository
+## Configmap as file
 
-## Secrets as file
+reuse the index.html
 
-Create file: MySecret.txt
-Content: SuperSecretStuff
+create file: configMap.yaml
+
+```YAML
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: indexhtml
+  namespace: nginx
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html>
+    <head>
+    <title>Welcome to K8S!</title>
+    <style>
+    html { color-scheme: light dark; }
+    body { width: 35em; margin: 0 auto;
+    font-family: Tahoma, Verdana, Arial, sans-serif; }
+    </style>
+    Commercial support is available at
+    <a href="http://nginx.com/">nginx.com</a>.</p>
+
+    <p><em>Thank you for using nginx.</em></p>
+    <p><!--#echo var="hostname"--></p>
+    </body>
+    </html>    </head>
+    <body>
+    <h1>Welcome to K8S ConfigMaps</h1>
+    <p>Kubernetes rocks! ;).</p>
+
+    <p>For online documentation and support please refer to
+    <a href="http://nginx.org/">nginx.org</a>.<br/>
+
+```
+
+### adjust deployment
+
+
+add: 
+
+```YAML
+      volumes:
+        - name: indexhtml
+          configMap:
+            name: indexhtml
+```
+
+```YAML
+        volumeMounts:
+          - name: indexhtml
+            mountPath: /usr/share/nginx/html
+```
+
+remove init container and env section
+
 
 ```Powershell
-kubectl -n nginx create secret generic mysecret --from-file=MySecret.txt
+kubectl -n nginx apply -f .\configmap.yaml
+kubectl -n nginx apply -f .\nginx-deployment.yaml
+
+```
+
+## Make it secret
+
+Create file: index.html
+
+```Powershell
+kubectl -n nginx create secret generic indexhtml --from-file=indexhtml=index.html
 ```
 
 show secret and decode secret
 ctrl+shift+4
 
 ```bash
-kubectl -n nginx get secrets mysecret -o yaml
-echo -n "TXlTdXBlclNlY3JldENvbnRlbnQ=" | base64 -d
+kubectl -n nginx get secrets indexhtml -o yaml
+echo -n "<valu>" | base64 -d
+```
+
+adjust deplyoment
+
+```YAML
+      volumes:
+        - name: indexhtml
+          secret:
+            secretName: indexhtml
+            items:
+              - key: indexhtml
+                path: index.html
+```
+
+```YAML
+        volumeMounts:
+          - name: indexhtml
+            mountPath: /usr/share/nginx/html/index.html
+            subPath: index.html
+```
+
+```Powershell
+kubectl apply -f .\nginx-deployment.yaml
 ```
 
 show secret file in container
@@ -27,63 +112,9 @@ show secret file in container
 ```Powershell
 kubectl -n nginx exec -it <podname> -- /bin/bash
 ls /usr/share/nginx/html/
-cat /usr/share/nginx/html/MySecret.txt && echo
+cat /usr/share/nginx/html/index.html && echo
 ```
 
-## Secret & Configmap as Environment Vars
+Kubectl -n nginx port-forward services/nginx-service 8080
 
-new file myconfigMap.yaml
-
-```YAML
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: myconfigmap
-  namespace: nginx
-data:
-  unencrypted: my-value
-```
-
-adjust deployment
-
-```YAML
-        ports:
-        - containerPort: 80
-        env:
-          - name: configMap
-            valueFrom:
-              configMapKeyRef:
-                name: myconfigmap
-                key: unencrypted
-        volumes:
-        - name: nginx-configmap
-          configMap:
-            name: nginx
-        - name: my-secret
-          secret:
-            secretName: mysecret
-        - name: myconfigmap
-          configMap:
-            name: myconfigmap
-```
-
-show confimap in container
-
-```powershell
-kubectl -n nginx apply -f .\myconfigMap.yaml
-kubectl -n nginx apply -f .\nginx-deployment.yaml
-kubectl -n nginx exec -it nginx-76fb4766d4-rw5vx -- /bin/bash
-```
-
-```bash
-echo $configMap
-```
-
-create and show secret
-
-```powershell
-kubectl -n nginx create secret generic envsecret --from-literal secretenv=myscretvalue
-kubectl -n nginx get secrets envsecret
-```
-
-adjust deployment
+http://localhost:8080/

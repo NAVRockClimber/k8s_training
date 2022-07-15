@@ -1,12 +1,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx
+  name: nginx-deployment
   namespace: nginx
   labels:
-    app: nginx
+    app: nginx-deployment
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: nginx
@@ -15,6 +15,15 @@ spec:
       labels:
         app: nginx
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/os
+                operator: In
+                values:
+                - linux
       containers:
       - name: nginx
         image: nginx:1.23.0
@@ -24,36 +33,14 @@ spec:
             cpu: "50m"
         ports:
         - containerPort: 80
-        env:
-          - name: configMap
-            valueFrom:
-              configMapKeyRef:
-                name: myconfigmap
-                key: unencrypted
-          - name: env-secret
-            valueFrom:
-              secretKeyRef:
-                key: secretenv
-                name: envsecret
         volumeMounts:
-          - name: nginx-configmap
+          - name: indexhtml
             mountPath: /usr/share/nginx/html/index.html
             subPath: index.html
-            readOnly: true
-          - name: my-secret
-            mountPath: /usr/share/nginx/html/MySecret.txt
-            subPath: MySecret.txt
-            readOnly: true
       volumes:
-        - name: nginx-configmap
-          configMap:
-            name: nginx
-        - name: my-secret
+        - name: indexhtml
           secret:
-            secretName: mysecret
-        - name: myconfigmap
-          configMap:
-            name: myconfigmap
-        - name: env-secret
-          secret:
-             secretName: envsecret
+            secretName: indexhtml
+            items:
+              - key: indexhtml
+                path: index.html
