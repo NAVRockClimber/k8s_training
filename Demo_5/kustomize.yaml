@@ -1,0 +1,20 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: my-nginx
+
+commonLabels:
+  app: my-nginx-app
+
+images:
+- name: nginx
+  newname: public.ecr.aws/nginx/nginx
+  newTag: 1.23.0
+
+resources:
+  - ns.yaml
+  - nginx-deplyoment.yaml
+  - nginx-service.yaml
+  - ingress.yaml
+  - pvc.yaml
+  - configmap.yaml

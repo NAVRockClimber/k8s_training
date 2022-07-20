@@ -143,3 +143,9 @@ Kubectl apply -f .\ingress.yaml
 
 open: https://ppi-demo.westeurope.cloudapp.azure.com/hello
 Show ssl encryption
+
+```Powershell
+Kubectl -n nginx get services
+```
+
+Highlight that we did not publish a port
