@@ -128,3 +128,18 @@ Kubectl -n nginx port-forward services/nginx-service 8080
 show new pvc in azure portal: https://portal.azure.com/#@cosmoconsult.com/resource/subscriptions/f4136c3f-1e55-4ae5-af8d-1ae3d0a25141/resourceGroups/mc_ppi-demo-aks_cluster_westeurope/providers/Microsoft.Storage/storageAccounts/feb453d7699e6485eb96da0/fileList
 
 open http://localhost:8080/
+
+## Ingress 
+
+Using port-formward is just during testing yaml
+Not feasable for users
+Explain: host, path, backend
+Explain: TLS
+Explain annotations as nginx specific
+
+```Powershell
+Kubectl apply -f .\ingress.yaml
+```
+
+open: https://ppi-demo.westeurope.cloudapp.azure.com/hello
+Show ssl encryption
