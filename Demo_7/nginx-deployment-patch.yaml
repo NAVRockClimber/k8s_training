@@ -1,0 +1,5 @@
+- op: add
+  path: /spec/template/spec/initContainers/0/env/-
+  value:
+    name: my-env
+    value: my-value

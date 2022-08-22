@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx
+  namespace: nginx
+data:
+  html-url: https://raw.githubusercontent.com/NAVRockClimber/k8s_training/main/Demo_4/index.html
