@@ -47,3 +47,5 @@ Kubectl delete deployments nginx
 ```
 
 Cleaning Up
+
+**[BACK](../README.md)**

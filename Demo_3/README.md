@@ -31,3 +31,5 @@ kubectl get pods -o wide
 
 explain new parameter
 highlight ips are the one from endpoints
+
+**[BACK](../README.md)**
