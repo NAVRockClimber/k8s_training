@@ -1,4 +1,4 @@
-# Demo 5 - Complex Deployment
+# Demo 4 - Complex Deployment
 
 - change to cluster due to in Rancher we don't have a storageclass (driver for volumes)
 - we can tell kubectl to use different cluster
